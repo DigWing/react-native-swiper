@@ -15,38 +15,46 @@ export default class Swiper extends PureComponent {
 
   onScrollEndDrag(offset) {
     const { width, height, horizontal } = this.props; // eslint-disable-line
+    const { page } = this.state;
 
     const nextPage = horizontal
       ? this.calculateNextPage(offset.x, width)
       : this.calculateNextPage(offset.y, height);
 
-    if (horizontal) {
-      this.scroll.scrollTo({
-        x: nextPage,
-        animated: true,
-      });
-    } else {
-      this.scroll.scrollTo({
-        y: nextPage,
-        animated: true,
-      });
-    }
+    if (page !== nextPage) {
+      if (horizontal) {
+        this.scroll.scrollTo({
+          x: nextPage,
+          animated: true,
+        });
+      } else {
+        this.scroll.scrollTo({
+          y: nextPage,
+          animated: true,
+        });
+      }
 
-    this.setState({ page: nextPage });
+      this.setState({ page: nextPage });
+    }
   }
 
 
   calculateNextPage(offset, distance) {
-    const { throttle } = this.props;
+    const { throttle, children } = this.props;
+    const { page } = this.state;
 
     if (Math.abs(offset % distance) > throttle) {
-      if (this.state.page - offset > 0) {
-        return (this.state.page - distance);
+      if (page - offset > 0) {
+        return page === 0
+          ? 0
+          : (page - distance);
       } else {
-        return (this.state.page + distance);
+        return page === distance * (children.length - 1)
+          ? distance * (children.length - 1)
+          : (page + distance);
       }
     } else {
-      return this.state.page;
+      return page;
     }
   }
 
