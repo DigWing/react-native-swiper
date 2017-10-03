@@ -50,6 +50,33 @@ export default class Swiper extends PureComponent {
     }
   }
 
+  scrollTo(index) {
+    const { width, height, horizontal, children } = this.props; // eslint-disable-line
+    let nextPage;
+
+    if (index > children.length) {
+      nextPage = horizontal ? (children.length - 1) * width : (children.length - 1) * height;
+    } else if (index < 0) {
+      nextPage = 0;
+    } else {
+      nextPage = horizontal ? index * width : index * height;
+    }
+
+    if (horizontal) {
+      this.scroll.scrollTo({
+        x: nextPage,
+        animated: true,
+      });
+    } else {
+      this.scroll.scrollTo({
+        y: nextPage,
+        animated: true,
+      });
+    }
+
+    this.setState({ page: nextPage });
+  }
+
   renderItem(item, index) {
     const { width, height } = this.props; // eslint-disable-line
     return (
